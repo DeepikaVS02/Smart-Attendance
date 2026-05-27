@@ -7,6 +7,7 @@ import StatsCards from './StatsCards';
 import StudentRoster from './StudentRoster';
 import AttendanceLogs from './AttendanceLogs';
 import { ToastContainer } from './Toast';
+import { API } from '../utils/api';
 
 const Dashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('logs'); // 'logs' or 'roster'
@@ -44,7 +45,7 @@ const Dashboard = ({ onLogout }) => {
     setLoading({ roster: true, logs: true });
     try {
       // 1. Fetch Students
-      const rosterRes = await fetch('/api/students');
+      const rosterRes = await fetch(`${API}/api/students`);
       if (rosterRes.ok) {
         const rosterData = await rosterRes.json();
         setStudents(rosterData);
@@ -72,7 +73,7 @@ const Dashboard = ({ onLogout }) => {
 
   const checkActiveSession = async () => {
     try {
-      const res = await fetch('/api/session/active');
+      const res = await fetch(`${API}/api/session/active`);
       if (res.ok) {
         const data = await res.json();
         if (data.active) {
@@ -91,13 +92,13 @@ const Dashboard = ({ onLogout }) => {
 
   const refreshAttendanceAndStats = async () => {
     try {
-      const statsRes = await fetch('/api/stats');
+      const statsRes = await fetch(`${API}/api/stats`);
       if (statsRes.ok) {
         const statsData = await statsRes.json();
         setStats(statsData);
       }
 
-      const attRes = await fetch('/api/attendance');
+      const attRes = await fetch(`${API}/api/attendance`);
       if (attRes.ok) {
         const attData = await attRes.json();
         setAttendance(attData);
@@ -133,7 +134,7 @@ const Dashboard = ({ onLogout }) => {
   // Start Session
   const handleStartSession = async () => {
     try {
-      const res = await fetch('/api/session/start', {
+      const res = await fetch(`${API}/api/session/start`, {
         method: 'POST',
       });
       if (res.ok) {
@@ -166,7 +167,7 @@ const Dashboard = ({ onLogout }) => {
   // Stop Session
   const handleStopSession = async () => {
     try {
-      const res = await fetch('/api/session/stop', {
+      const res = await fetch(`${API}/api/session/stop`, {
         method: 'POST',
       });
       if (res.ok) {
@@ -207,7 +208,7 @@ const Dashboard = ({ onLogout }) => {
       const studentToMark = absentStudents[randomIndex];
 
       try {
-        const res = await fetch('/api/mark-attendance', {
+        const res = await fetch(`${API}/api/mark-attendance`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ studentId: studentToMark.bluetooth_id }),

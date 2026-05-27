@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API } from '../utils/api';
 import { Lock, User, AlertCircle, Bluetooth } from 'lucide-react';
 
 const Login = ({ onLogin }) => {
@@ -13,7 +14,7 @@ const Login = ({ onLogin }) => {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${API}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),

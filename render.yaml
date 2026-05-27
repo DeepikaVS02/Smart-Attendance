@@ -1,0 +1,36 @@
+# render.yaml — Render.com deployment blueprint
+# Deploys both the FastAPI backend and React frontend in one config.
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  # ── Backend: FastAPI Web Service ───────────────────────────────────────────
+  - type: web
+    name: smart-attendance-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      # Set this AFTER you know the frontend URL so CORS is locked down.
+      # Leave as * during initial deploy, update once the static site is live.
+      - key: ALLOWED_ORIGINS
+        value: "*"
+    healthCheckPath: /api/stats
+
+  # ── Frontend: React Static Site ────────────────────────────────────────────
+  - type: web
+    name: smart-attendance-ui
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      # IMPORTANT: Replace with your actual backend Render URL after first deploy.
+      # Format: https://smart-attendance-api.onrender.com
+      - key: VITE_API_URL
+        value: https://smart-attendance-api.onrender.com
+    routes:
+      # SPA fallback: serve index.html for all routes
+      - type: rewrite
+        source: /*
+        destination: /index.html
